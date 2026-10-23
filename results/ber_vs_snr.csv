@@ -1,0 +1,41 @@
+curve,ebn0_db,ber,bits_tested,frames_lost,frames
+Uncoded QPSK,0,8.472e-02,7200,0,3
+Uncoded QPSK,1,1.339e-01,7200,0,3
+Uncoded QPSK,2,4.006e-02,16800,0,7
+Uncoded QPSK,3,2.536e-02,16800,0,7
+Uncoded QPSK,4,1.385e-02,19200,0,8
+Uncoded QPSK,5,5.729e-03,19200,0,8
+Uncoded QPSK,6,1.979e-03,19200,0,8
+Uncoded QPSK,7,1.615e-03,19200,0,8
+Uncoded QPSK,8,1.042e-04,19200,0,8
+Uncoded QPSK,9,1.042e-04,19200,0,8
+Conv K=7 hard,0,nan,0,3,3
+Conv K=7 hard,1,nan,0,3,3
+Conv K=7 hard,2,1.862e-01,2400,5,7
+Conv K=7 hard,3,5.014e-02,7200,1,7
+Conv K=7 hard,4,8.021e-03,9600,0,8
+Conv K=7 hard,5,1.146e-03,9600,0,8
+Conv K=7 hard,6,0.000e+00,9600,0,8
+Conv K=7 hard,7,0.000e+00,9600,0,8
+Conv K=7 hard,8,0.000e+00,9600,0,8
+Conv K=7 hard,9,0.000e+00,9600,0,8
+Conv K=7 soft,0,nan,0,3,3
+Conv K=7 soft,1,nan,0,3,3
+Conv K=7 soft,2,1.078e-01,3600,4,7
+Conv K=7 soft,3,4.190e-02,8400,0,7
+Conv K=7 soft,4,0.000e+00,9600,0,8
+Conv K=7 soft,5,0.000e+00,9600,0,8
+Conv K=7 soft,6,0.000e+00,9600,0,8
+Conv K=7 soft,7,0.000e+00,9600,0,8
+Conv K=7 soft,8,0.000e+00,9600,0,8
+Conv K=7 soft,9,0.000e+00,9600,0,8
+LDPC soft,0,nan,0,3,3
+LDPC soft,1,nan,0,3,3
+LDPC soft,2,0.000e+00,5120,2,7
+LDPC soft,3,0.000e+00,5120,2,7
+LDPC soft,4,0.000e+00,7168,1,8
+LDPC soft,5,0.000e+00,8192,0,8
+LDPC soft,6,0.000e+00,8192,0,8
+LDPC soft,7,0.000e+00,8192,0,8
+LDPC soft,8,0.000e+00,8192,0,8
+LDPC soft,9,0.000e+00,8192,0,8

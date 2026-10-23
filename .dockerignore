@@ -1,0 +1,12 @@
+.git
+__pycache__
+*.pptx
+*.png
+!results/*.png
+web
+.venv
+venv
+.git
+.env
+gemini_key.txt
+.streamlit/secrets.toml

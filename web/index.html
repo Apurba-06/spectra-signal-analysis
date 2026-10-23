@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SPECTRA - COMINT Signal Analysis Workbench</title>
+<style>
+:root{--bg:#0f1115;--card:#171a21;--line:#262b36;--fg:#e8ecf3;--mut:#8a93a6;--acc:#00e5ff;--ok:#00e676;--warn:#ffb300}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,Segoe UI,Roboto,sans-serif}
+header{padding:28px 20px 10px;max-width:1100px;margin:auto}h1{margin:0;font-size:28px;letter-spacing:.5px}h1 span{color:var(--acc)}
+.sub{color:var(--mut);margin:6px 0 0}.wrap{max-width:1100px;margin:auto;padding:0 20px 60px}
+.note{background:#1d2230;border:1px solid var(--line);border-left:3px solid var(--acc);padding:10px 14px;border-radius:8px;color:var(--mut);margin:14px 0}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.tab{background:var(--card);border:1px solid var(--line);color:var(--fg);padding:8px 14px;border-radius:999px;cursor:pointer;font-size:14px}
+.tab.on{background:var(--acc);color:#001318;border-color:var(--acc);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}.card h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--mut)}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{color:var(--mut);font-weight:500}
+.ok{color:var(--ok);font-weight:700}.bad{color:#ff5252;font-weight:700}
+.payload{font-family:ui-monospace,Consolas,monospace;background:#0b0d12;border:1px solid var(--line);border-radius:8px;padding:12px;color:var(--ok);word-break:break-word}
+canvas{width:100%;height:auto;background:#0b0d12;border-radius:8px;border:1px solid var(--line)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}.kv div:nth-child(odd){color:var(--mut)}
+a{color:var(--acc)}footer{color:var(--mut);text-align:center;padding:30px 0;font-size:13px}
+</style></head><body>
+<header><h1><span>SPECTRA</span> &middot; COMINT Signal Analysis Workbench</h1>
+<p class="sub">Smart India Hackathon 2026 &middot; PS 26147 &middot; blind analysis of .wav / .iq intercepts - every parameter is measured from the samples</p></header>
+<div class="wrap">
+<div class="note">This page shows results computed by the SPECTRA receiver on the five bundled ground-truth captures (precomputed, not a live upload).
+The interactive tool is the desktop app - <a href="https://github.com/Apurba-06/SPECTRA" target="_blank" rel="noopener">source &amp; download on GitHub</a>.</div>
+<div class="tabs" id="tabs"></div>
+<div id="view"></div>
+<div class="card" style="margin-top:14px"><h3>BER vs Eb/N0 - measured through the full receiver</h3><canvas id="ber" width="1000" height="460"></canvas>
+<p class="sub" style="font-size:13px">Dashed = uncoded QPSK theory. Hollow marker = some frames lost at that point (receiver lock failure, excluded from BER). Down-triangle = no errors seen (plotted at 1/bits tested).</p></div>
+</div>
+<footer>SPECTRA &middot; team project for SIH 2026 &middot; <a href="https://github.com/Apurba-06/SPECTRA" target="_blank" rel="noopener">github.com/Apurba-06/SPECTRA</a></footer>
+<script>
+const $=s=>document.querySelector(s);let D=null;
+const NAMES={demo:"QPSK + Conv + Block",demo_bpsk_rs:"BPSK + RS(255,223)",demo_qpsk_concat:"QPSK + RS+Conv + Forney (.iq)",demo_fsk:"2-FSK + Conv + Diagonal",demo_16qam_uncoded:"16-QAM uncoded"};
+function esc(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function tick(ok){return ok?'<span class="ok">&#10003;</span>':'<span class="bad">&#10007;</span>'}
+function setup(c,pad){const w=c.width,h=c.height,x=c.getContext('2d');x.clearRect(0,0,w,h);x.fillStyle='#0b0d12';x.fillRect(0,0,w,h);return[x,w,h]}
+function drawConst(c,pts){const[x,w,h]=setup(c);const R=1.9;x.strokeStyle='#262b36';x.lineWidth=1;x.beginPath();x.moveTo(w/2,0);x.lineTo(w/2,h);x.moveTo(0,h/2);x.lineTo(w,h/2);x.stroke();
+x.fillStyle='rgba(0,229,255,.55)';pts.forEach(p=>{const X=w/2+p[0]/R*w/2,Y=h/2-p[1]/R*h/2;x.beginPath();x.arc(X,Y,2.6,0,6.3);x.fill()});
+x.fillStyle='#8a93a6';x.font='13px system-ui';x.fillText('I',w-16,h/2-6);x.fillText('Q',w/2+6,14)}
+function drawSpec(c,s){const[x,w,h]=setup(c);const L=46,B=26,T=10;const mn=Math.min(...s.db),mx=Math.max(...s.db);const f0=s.f_khz[0],f1=s.f_khz[s.f_khz.length-1];
+x.strokeStyle='#262b36';x.fillStyle='#8a93a6';x.font='12px system-ui';for(let i=0;i<=4;i++){const y=T+(h-T-B)*i/4;x.beginPath();x.moveTo(L,y);x.lineTo(w-6,y);x.stroke();x.fillText((mx-(mx-mn)*i/4).toFixed(0)+' dB',2,y+4)}
+x.strokeStyle='#00e676';x.lineWidth=1.6;x.beginPath();s.db.forEach((d,i)=>{const X=L+(w-L-6)*i/(s.db.length-1),Y=T+(h-T-B)*(1-(d-mn)/(mx-mn||1));i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();
+x.fillStyle='#8a93a6';x.fillText(f0.toFixed(1)+' kHz',L,h-8);x.fillText(f1.toFixed(1)+' kHz',w-70,h-8);x.fillText('Power spectral density',w/2-60,h-8)}
+function show(id){const d=D.demos.find(z=>z.id===id);document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.id===id));
+const t=d.truth,dt=d.detected,m=d.match;
+const rows=[['Modulation',t.modulation,dt.mod,m.modulation],['Symbol rate (baud)',t.baud.toLocaleString(),dt.baud.toLocaleString(),m.baud]];
+$('#view').innerHTML=`<div class="grid">
+<div class="card"><h3>Decoded payload ${d.crc_ok?'<span class="ok">CRC-16 OK</span>':'<span class="bad">no valid frame</span>'}</h3><div class="payload">${d.payload?esc(d.payload):'-'}</div>
+<p class="sub" style="font-size:13px">Recovered automatically from <b>${esc(d.file)}</b>: ${esc(dt.sync)}.</p></div>
+<div class="card"><h3>Detected vs ground truth</h3><table><tr><th></th><th>Truth</th><th>Detected</th><th></th></tr>
+${rows.map(r=>`<tr><td>${r[0]}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${tick(r[3])}</td></tr>`).join('')}
+<tr><td>Interleaver</td><td>${esc(t.interleaver+(Object.keys(t.interleaver_params||{}).length?' '+JSON.stringify(t.interleaver_params):''))}</td><td>${esc(dt.interleaver)}</td><td></td></tr>
+<tr><td>FEC</td><td>${esc(t.fec)}</td><td>${esc(dt.fec)}</td><td></td></tr>
+<tr><td>Payload</td><td colspan="2">identical to transmitted message</td><td>${tick(m.message)}</td></tr></table></div>
+<div class="card"><h3>Recovered constellation (after timing + carrier recovery)</h3><canvas id="c1" width="520" height="520"></canvas></div>
+<div class="card"><h3>Spectrum</h3><canvas id="c2" width="620" height="420"></canvas>
+<div class="kv" style="margin-top:10px"><div>Sample rate</div><div>${d.fs.toLocaleString()} Hz</div><div>Measured SNR</div><div>${dt.snr>40?'>40':dt.snr} dB (decision-directed)</div></div></div>
+<div class="card"><h3>Blind interleaver search (code mismatch, lower = better)</h3><table><tr><th>Hypothesis</th><th>Parameters</th><th>Mismatch</th></tr>
+${d.ranking.map(r=>`<tr><td>${esc(r.mode)}</td><td>${esc(r.params)}</td><td>${r.score}%</td></tr>`).join('')||'<tr><td colspan="3">not required for this capture</td></tr>'}</table></div>
+<div class="card"><h3>All measured parameters</h3><div class="kv">${Object.entries(d.params).map(([k,v])=>`<div>${esc(k)}</div><div>${esc(v)}</div>`).join('')}</div></div></div>`;
+drawConst($('#c1'),d.const);drawSpec($('#c2'),d.spec)}
+function drawBER(){const c=$('#ber'),[x,w,h]=setup(c);const L=64,B=40,T=14,R=16,lo=-5,hi=0;const X=e=>L+(w-L-R)*e/10,Y=b=>T+(h-T-B)*(hi-Math.log10(Math.max(b,1e-5)))/(hi-lo);
+x.font='13px system-ui';x.strokeStyle='#262b36';x.fillStyle='#8a93a6';for(let p=0;p>=-5;p--){const y=Y(Math.pow(10,p));x.beginPath();x.moveTo(L,y);x.lineTo(w-R,y);x.stroke();x.fillText('1e'+p,12,y+4)}
+for(let e=0;e<=10;e+=2){x.beginPath();x.moveTo(X(e),T);x.lineTo(X(e),h-B);x.stroke();x.fillText(e,X(e)-4,h-B+18)}x.fillText('Eb/N0 (dB)',w/2-30,h-8);
+x.setLineDash([6,5]);x.strokeStyle='#888';x.beginPath();for(let e=0;e<=10;e+=.1){const b=.5*erfc(Math.sqrt(Math.pow(10,e/10)));e?x.lineTo(X(e),Y(b)):x.moveTo(X(e),Y(b))}x.stroke();x.setLineDash([]);
+const col={"Uncoded QPSK":"#ff5555","Conv K=7 hard":"#ffaa00","Conv K=7 soft":"#00e5ff","LDPC soft":"#00ff66"};let ly=T+8;
+for(const[n,pts]of Object.entries(D.ber)){x.strokeStyle=col[n];x.fillStyle=col[n];x.lineWidth=2;const ok=pts.filter(p=>p.ber>0);x.beginPath();ok.forEach((p,i)=>i?x.lineTo(X(p.x),Y(p.ber)):x.moveTo(X(p.x),Y(p.ber)));x.stroke();
+pts.forEach(p=>{if(p.ber===null)return;const yy=p.ber>0?Y(p.ber):Y(1/p.bits);x.beginPath();if(p.ber===0){x.moveTo(X(p.x)-5,yy-5);x.lineTo(X(p.x)+5,yy-5);x.lineTo(X(p.x),yy+4);x.closePath();x.stroke()}else{x.arc(X(p.x),yy,5,0,6.3);p.lost?x.stroke():x.fill()}});
+x.fillRect(w-190,ly-8,14,4);x.fillStyle='#e8ecf3';x.fillText(n,w-170,ly-2);ly+=20}
+x.strokeStyle='#888';x.setLineDash([5,4]);x.beginPath();x.moveTo(w-190,ly-6);x.lineTo(w-176,ly-6);x.stroke();x.setLineDash([]);x.fillStyle='#e8ecf3';x.fillText('Uncoded QPSK (theory)',w-170,ly-2)}
+function erfc(z){const t=1/(1+.5*z),r=t*Math.exp(-z*z-1.26551223+t*(1.00002368+t*(.37409196+t*(.09678418+t*(-.18628806+t*(.27886807+t*(-1.13520398+t*(1.48851587+t*(-.82215223+t*.17087277)))))))));return r}
+fetch('data.json').then(r=>r.json()).then(j=>{D=j;$('#tabs').innerHTML=D.demos.map(d=>`<button class="tab" data-id="${d.id}">${NAMES[d.id]||d.id}</button>`).join('');
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.id));show(D.demos[0].id);drawBER()}).catch(e=>{$('#view').textContent='Failed to load data.json: '+e});
+</script></body></html>
