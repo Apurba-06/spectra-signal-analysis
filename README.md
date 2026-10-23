@@ -2,6 +2,8 @@
 
 Automated analysis of `.wav` and raw `.iq` captures, with signal parameter extraction and receiver diagnostics.
 
+**[Open the live SPECTRA app](https://spectra-comint.onrender.com/)** · [View the public GitHub repository](https://github.com/Apurba-06/spectra-signal-analysis)
+
 | Resource | Link |
 | --- | --- |
 | Live application | [spectra-comint.onrender.com](https://spectra-comint.onrender.com/) |
