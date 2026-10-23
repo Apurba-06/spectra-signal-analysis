@@ -534,7 +534,7 @@ with tabs[0]:
     st.subheader("Project overview")
     st.markdown(
         """
-        **SPECTRA IS AN automated model for analysis of .IQ and .wav files along with signal parameter extraction.**
+        **SPECTRA is an automated model for analysis of .IQ and .wav files along with signal parameter extraction.**
         It analyzes capture samples without requiring a supplied modulation or coding profile, estimates
         signal parameters, recovers symbols and bits, searches for frame synchronization, then tests
         supported interleavers and error-correcting codes.
