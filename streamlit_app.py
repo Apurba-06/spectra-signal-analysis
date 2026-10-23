@@ -221,6 +221,7 @@ st.markdown(
     f"""
     <style>
     :root {{
+        color-scheme: {"dark" if theme_name == "Dark" else "light"};
         --paper: {palette["paper"]} !important;
         --paper-deep: {palette["panel"]} !important;
         --surface: {palette["surface"]} !important;
@@ -268,23 +269,149 @@ st.markdown(
         background: var(--surface) !important;
         border-color: var(--line) !important;
     }}
+    [data-baseweb="select"] > div,
+    [data-baseweb="input"] > div,
+    [data-baseweb="textarea"] > div,
+    [data-testid="stTextInput"] input,
+    [data-testid="stTextArea"] textarea,
+    [data-testid="stNumberInput"] input {{
+        background: var(--surface) !important;
+        color: var(--ink) !important;
+        border-color: var(--line) !important;
+    }}
+    [data-baseweb="select"] input,
+    [data-baseweb="input"] input,
+    [data-baseweb="textarea"] textarea {{
+        color: var(--ink) !important;
+        caret-color: var(--ink);
+    }}
+    [data-baseweb="select"] svg,
+    [data-baseweb="input"] svg,
+    [data-testid="stNumberInput"] button svg {{
+        fill: var(--ink);
+        color: var(--ink);
+    }}
+    [data-baseweb="popover"],
+    [data-baseweb="menu"],
+    [role="listbox"] {{
+        background: var(--surface) !important;
+        border: 1px solid var(--line) !important;
+        color: var(--ink) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
+    }}
+    [role="option"],
+    [data-baseweb="menu"] li {{
+        background: var(--surface) !important;
+        color: var(--ink) !important;
+    }}
+    [role="option"]:hover,
+    [role="option"][aria-selected="true"],
+    [data-baseweb="menu"] li:hover {{
+        background: var(--paper-deep) !important;
+        color: var(--ink) !important;
+    }}
+    [role="option"][aria-selected="true"] {{
+        box-shadow: inset 3px 0 var(--moss);
+    }}
+    [data-testid="stButton"] button,
+    [data-testid="stDownloadButton"] button,
+    [data-testid="stFormSubmitButton"] button {{
+        background: var(--surface) !important;
+        border-color: var(--line) !important;
+        color: var(--ink) !important;
+    }}
+    [data-testid="stButton"] button:hover:not(:disabled),
+    [data-testid="stDownloadButton"] button:hover:not(:disabled),
+    [data-testid="stFormSubmitButton"] button:hover:not(:disabled) {{
+        background: var(--paper-deep) !important;
+        border-color: var(--moss) !important;
+        color: var(--ink) !important;
+    }}
+    [data-testid="stButton"] button:disabled,
+    [data-testid="stDownloadButton"] button:disabled,
+    [data-testid="stFormSubmitButton"] button:disabled {{
+        background: var(--paper-deep) !important;
+        border-color: var(--line) !important;
+        color: var(--muted) !important;
+        opacity: 1 !important;
+        cursor: not-allowed;
+    }}
+    [data-testid="stButton"] button:disabled *,
+    [data-testid="stDownloadButton"] button:disabled *,
+    [data-testid="stFormSubmitButton"] button:disabled * {{
+        color: var(--muted) !important;
+    }}
+    [data-testid="stBaseButton-primary"] {{
+        background: {palette["accent"]} !important;
+        border-color: {palette["accent"]} !important;
+        color: {palette["paper"]} !important;
+    }}
+    [data-testid="stBaseButton-primary"]:hover:not(:disabled) {{
+        background: {palette["accent_hover"]} !important;
+        border-color: {palette["accent_hover"]} !important;
+        color: {palette["paper"]} !important;
+    }}
     [data-testid="stMarkdownContainer"], [data-testid="stWidgetLabel"] p,
     [data-testid="stSidebar"] label, [data-testid="stCaptionContainer"] {{
         color: var(--ink);
     }}
-    [data-testid="stTabs"] [role="tab"] {{
-        background: var(--surface);
-        border-color: var(--line);
-        color: var(--muted);
+    [data-testid="stSidebar"] [data-testid="stButton"] button *,
+    [data-testid="stBaseButton-primary"] * {{
+        color: {palette["paper"]} !important;
     }}
-    [data-testid="stTabs"] [role="tab"]:hover {{
-        border-color: {palette["accent"]};
+    [data-testid="stButton"] button:disabled *,
+    [data-testid="stDownloadButton"] button:disabled *,
+    [data-testid="stFormSubmitButton"] button:disabled * {{
+        color: var(--muted) !important;
+    }}
+    [data-testid="stFileUploader"] section {{
+        background: var(--surface) !important;
+        border-color: var(--line) !important;
+        color: var(--ink) !important;
+    }}
+    [data-testid="stFileUploader"] section,
+    [data-testid="stFileUploader"] section * {{
         color: var(--ink);
     }}
+    [data-testid="stFileUploader"] section button {{
+        background: var(--paper-deep) !important;
+        border-color: var(--line) !important;
+        color: var(--ink) !important;
+    }}
+    [data-testid="stCheckbox"] label,
+    [data-testid="stRadio"] label {{
+        color: var(--ink) !important;
+    }}
+    [data-testid="stCheckbox"] input,
+    [data-testid="stRadio"] input {{
+        accent-color: var(--moss);
+    }}
+    [data-testid="stExpander"] details,
+    [data-testid="stExpander"] summary {{
+        background: var(--surface) !important;
+        border-color: var(--line) !important;
+        color: var(--ink) !important;
+    }}
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricLabel"],
+    [data-testid="stCaptionContainer"],
+    [data-testid="stDataFrame"],
+    [data-testid="stTable"] {{
+        color: var(--ink) !important;
+    }}
+    [data-testid="stTabs"] [role="tab"] {{
+        background: var(--surface) !important;
+        border-color: var(--line) !important;
+        color: var(--ink) !important;
+    }}
+    [data-testid="stTabs"] [role="tab"]:hover {{
+        border-color: {palette["accent"]} !important;
+        color: var(--ink) !important;
+    }}
     [data-testid="stTabs"] [role="tab"][aria-selected="true"] {{
-        background: {palette["accent"]};
-        border-color: {palette["accent"]};
-        color: {palette["paper"]};
+        background: {palette["accent"]} !important;
+        border-color: {palette["accent"]} !important;
+        color: {palette["paper"]} !important;
     }}
     [data-testid="stTabs"] [role="tab"] [data-testid="stMarkdownContainer"],
     [data-testid="stTabs"] [role="tab"] [data-testid="stMarkdownContainer"] p {{
