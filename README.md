@@ -5,6 +5,7 @@ Automated analysis of `.wav` and raw `.iq` captures, with signal parameter extra
 | Resource | Link |
 | --- | --- |
 | Live application | [spectra-comint.onrender.com](https://spectra-comint.onrender.com/) |
+| Application health check | [Render health endpoint](https://spectra-comint.onrender.com/_stcore/health) |
 | Public source repository | [github.com/Apurba-06/spectra-signal-analysis](https://github.com/Apurba-06/spectra-signal-analysis) |
 
 ## Project overview
