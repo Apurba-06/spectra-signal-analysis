@@ -1,6 +1,8 @@
 # SPECTRA
-[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/apurba-06/spectra-signal-analysis?utm_source=readme&utm_medium=badge)
+
 Automated analysis of `.wav` and raw `.iq` captures, with signal parameter extraction and receiver diagnostics.
+
+[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/apurba-06/spectra-signal-analysis?utm_source=readme&utm_medium=badge)
 
 **[Open the live SPECTRA app](https://spectra-comint.onrender.com/)** · [View the public GitHub repository](https://github.com/Apurba-06/spectra-signal-analysis)
 
